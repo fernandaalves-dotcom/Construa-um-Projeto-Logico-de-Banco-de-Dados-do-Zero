@@ -1,0 +1,170 @@
+---- Criando entidade de clientes----
+
+
+CREATE TABLE Cliente(
+  IdCliente INT AUTO_INCREMENT PRIMARY KEY,
+  Nome VARCHAR(50) NOT NULL,
+  CPF CHAR(11) NOT NULL UNIQUE,
+  Email VARCHAR(100) NOT NULL,
+  Telefone VARCHAR(50) NOT NULL,
+  Data_Cadastro DATE NOT NULL, 
+  Endereço VARCHAR(100) NOT NULL
+  );
+
+
+----- Criando entidade de veiculos---
+
+ CREATE TABLE Veiculo(
+  IdVeiculo INT AUTO_INCREMENT PRIMARY KEY,
+  Modelo VARCHAR(50) NOT NULL,
+  Ano_fabricação YEAR NOT NULL,
+  Cor VARCHAR(10) NOT NULL,
+  Placa CHAR(7) UNIQUE NOT NULL,
+  Marca VARCHAR(50) NOT NULL,
+  Id_cliente INT NOT NULL, 
+  FOREIGN KEY (Id_cliente) 
+   REFERENCES Cliente(IdCliente)
+   );
+  
+
+----- Criando entidade de funcionarios----
+
+CREATE TABLE Funcionario( 
+  Idfuncionario INT AUTO_INCREMENT PRIMARY KEY,
+  Nome VARCHAR(40)NOT NULL,
+  Funçao VARCHAR(20) NOT NULL,
+  Email VARCHAR(100) NOT NULL,
+  Data_admissao DATE NOT NULL,
+  Ativo BOOLEAN NOT NULL DEFAULT TRUE, 
+   Id_Veiculo INT NOT NULL, 
+  FOREIGN KEY (Id_Veiculo) 
+   REFERENCES Veiculo(IdVeiculo)
+  );
+
+   
+----  Criando entidade servico---
+
+   
+CREATE TABLE Serviço(
+  Idserviço INT AUTO_INCREMENT PRIMARY KEY,
+  Descrição VARCHAR(100) NOT NULL,
+  Preço DECIMAL (10,4) NOT NULL,
+  Tempo_serviço TIME NOT NULL,
+  Id_funcionario INT NOT NULL, 
+  FOREIGN KEY (Id_funcionario) 
+   REFERENCES Funcionario(Idfuncionario)
+  );
+
+
+-----Alteracoes na entidade funcionarios-----
+
+  
+ALTER TABLE Funcionario
+DROP FOREIGN KEY funcionario_ibfk_1;
+
+ALTER TABLE Funcionario
+DROP COLUMN Id_Veiculo;
+
+
+-----criando entidade ordem de servico---
+
+
+CREATE TABLE Ordem_de_serviço(
+  Id_os INT AUTO_INCREMENT PRIMARY KEY,
+  Status ENUM ('Entrada','Andamento','Finalizado','Cancelada') NOT NULL,
+  Inicio_os DATE NOT NULL,
+  Final_os DATE NOT NULL,
+  Condiçao_veiculo VARCHAR(100) NOT NULL,
+  Observacao VARCHAR(50),
+  IDveiculo INT NOT NULL,
+  IDfuncionario INT NOT NULL, 
+  IDcliente INT NOT NULL,
+     CONSTRAINT ID_V
+  FOREIGN KEY (IDveiculo) 
+  REFERENCES Veiculo(IdVeiculo),
+  
+     CONSTRAINT ID_F 
+  FOREIGN KEY (IDfuncionario) 
+  REFERENCES Funcionario(Idfuncionario),
+  
+     CONSTRAINT ID_C                   
+  FOREIGN KEY (IDcliente) 
+  REFERENCES Cliente(IdCliente) 
+  );
+
+
+-----criando entidade peca---
+ 
+CREATE TABLE Peça( 
+  Idpeça INT AUTO_INCREMENT PRIMARY KEY,
+  Descrição VARCHAR(100) NOT NULL,
+  Estoque INT NOT NULL DEFAULT 0,
+  Ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  Fabricante VARCHAR(50) NOT NULL,
+  Codigo CHAR(7) NOT NULL UNIQUE,
+  Preço_custo DECIMAL (10,4) NOT NULL,
+  Preço_venda DECIMAL (10,4) NOT NULL
+  );
+
+
+------criando entidade item da ordem de servico---
+
+CREATE TABLE Item_os(
+  ID_ordem INT NOT NULL,
+  IDservico INT NOT NULL,
+  IDpeca INT NOT NULL,
+  Quantidade INT NOT NULL,
+  Comissao_funcionario DECIMAL(10,2) NOT NULL,
+  Desconto DECIMAL(5,2) DEFAULT 0 NOT NULL,
+
+  PRIMARY KEY (ID_ordem, IDservico, IDpeca),
+
+  CONSTRAINT ID_OS
+    FOREIGN KEY (ID_ordem)
+    REFERENCES Ordem_de_serviço(Id_os),
+
+  CONSTRAINT ID_S
+    FOREIGN KEY (IDservico)
+    REFERENCES Serviço(Idserviço),
+
+  CONSTRAINT ID_P
+    FOREIGN KEY (IDpeca)
+    REFERENCES Peça(Idpeça)
+);
+
+
+-----criando entidade item peca da ordem de servico----
+
+
+ CREATE TABLE Item_peça( 
+   Quantidade INT NOT NULL,
+   Preço_unidade DECIMAL(10,2)DEFAULT 0 NOT NULL,
+   ID_peça INT NOT NULL,
+   ID_ordem INT NOT NULL,
+   PRIMARY KEY (ID_peça, ID_ordem),
+  
+  CONSTRAINT ID_Pe
+    FOREIGN KEY (ID_peça)
+    REFERENCES Peça(Idpeça),
+
+  CONSTRAINT ID_O
+    FOREIGN KEY (ID_ordem)
+    REFERENCES Ordem_de_serviço(Id_os)
+   );
+
+
+------criando entidade de pagamento----
+  
+CREATE TABLE Pagamentos(
+  Idpagamento INT AUTO_INCREMENT PRIMARY KEY,
+  Id_ordem INT NOT NULL,
+  Data_pagamento DATE NOT NULL,
+  Forma_pagamento ENUM('Cartão','Dinheiro','Boleto','Pix') NOT NULL,
+  Status_pagamento ENUM('Pago','Pendente') NOT NULL,
+  
+  CONSTRAINT Id_ordems
+    FOREIGN KEY (Id_ordem)
+    REFERENCES Ordem_de_serviço(Id_os)
+  );
+  
+  
