@@ -175,3 +175,16 @@ SET Preço = TRUNCATE(Preço,2);
 
 ALTER TABLE Serviço
 MODIFY Preço DECIMAL(10,2);
+
+
+
+------Alterações na entidade Peças ,percebi que estava com muitas casas decimais no preço-----
+
+UPDATE Peça
+SET Preço_custo = TRUNCATE(Preço_custo, 2),
+    Preço_venda = TRUNCATE(Preço_venda, 2);
+
+
+ALTER TABLE Peça
+MODIFY Preço_custo DECIMAL(10,2),
+MODIFY Preço_venda DECIMAL(10,2);
