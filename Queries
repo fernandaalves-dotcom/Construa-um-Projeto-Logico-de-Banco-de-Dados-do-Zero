@@ -1,0 +1,64 @@
+------ Qual modelo de veiculo, esteve mais presente na Oficina?----
+
+
+SELECT V.Modelo, COUNT(os.id_os) AS total_ordens
+FROM Ordem_de_serviço os
+JOIN Veiculo V 
+ON os.IDveiculo = V.IdVeiculo
+GROUP BY V.modelo
+ORDER BY total_ordens DESC;
+
+
+------Clientes que tem mais de 1 ordem de serviço---
+
+
+SELECT c.Nome, COUNT(os.id_os) AS quantidade_os
+FROM Cliente c
+JOIN Ordem_de_serviço os 
+ON c.IdCliente = os.IDcliente
+GROUP BY c.Nome
+HAVING COUNT(os.Id_os) > 1
+ORDER BY quantidade_os DESC;
+
+
+----- De acordo com a consulta acima, queria saber qual era o id desses clientes, para saber qual era o motivo de terem vindo até a  oficina---
+
+SELECT IdCliente,Nome
+FROM Cliente
+WHERE Nome IN ('fernanda costa','Patricia Gomes','Thiago Nogueira','Simone Vieira');
+
+
+--------Essa foi a query para verificar a condição do veiculo que os levou até a oficina------
+
+
+SELECT IDcliente,Inicio_os,Final_os,Observacao
+FROM Ordem_de_serviço
+WHERE IDcliente IN (6,8,17,28);
+
+
+---- O Mecanico  que mais atendeu----
+
+SELECT f.nome, COUNT(s.Idserviço) AS total_servicos
+FROM Serviço s
+JOIN Funcionario f 
+ON s.Id_funcionario = f.idfuncionario
+GROUP BY f.nome
+ORDER BY total_servicos DESC;
+
+
+-----Quantas ordens de serviço, ainda estão com pagamento pendente?----
+
+
+SELECT c.Nome, p.Idpagamento, p.Forma_pagamento, p.Status_pagamento
+FROM Pagamentos p
+JOIN Ordem_de_serviço os 
+ON p.Id_ordem = os.Id_os
+JOIN Cliente c 
+ON os.IDcliente = c.IdCliente
+WHERE p.Status_pagamento = 'Pendente';
+
+
+
+
+
+
