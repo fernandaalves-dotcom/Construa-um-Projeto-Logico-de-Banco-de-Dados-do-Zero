@@ -188,3 +188,26 @@ SET Preço_custo = TRUNCATE(Preço_custo, 2),
 ALTER TABLE Peça
 MODIFY Preço_custo DECIMAL(10,2),
 MODIFY Preço_venda DECIMAL(10,2);
+
+
+
+
+----Ao iniciar as Queries, percebi um erro no esquema de relação e precisei adicionar uma tabela de ligação-----
+
+
+CREATE TABLE Item_servico(
+  Id_ordem INT NOT NULL,
+  Id_servico INT NOT NULL,
+
+  PRIMARY KEY (Id_ordem, Id_servico),
+
+  FOREIGN KEY (Id_ordem)
+    REFERENCES Ordem_de_serviço(Id_os),
+
+  FOREIGN KEY (Id_servico)
+    REFERENCES Serviço(Idserviço)
+);
+
+
+
+
